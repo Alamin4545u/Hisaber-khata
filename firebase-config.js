@@ -1,6 +1,5 @@
 // firebase-config.js
-
-export const firebaseConfig = {
+var firebaseConfig = {
   apiKey: "AIzaSyDhCqcEZNdUihV0hFYaU3Lq3R92eua8TS4",
   authDomain: "mining-app-c8740.firebaseapp.com",
   databaseURL: "https://mining-app-c8740-default-rtdb.firebaseio.com",
