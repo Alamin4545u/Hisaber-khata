@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>হিসাব খাতা - Firebase</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #f3f4f6);
+            --text-color: var(--tg-theme-text-color, #111827);
+            --hint-color: var(--tg-theme-hint-color, #6b7280);
+            --link-color: var(--tg-theme-link-color, #3b82f6);
+            --btn-color: var(--tg-theme-button-color, #2563eb);
+            --btn-text: var(--tg-theme-button-text-color, #ffffff);
+            --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+            --danger: #ef4444;
+            --success: #10b981;
+            --border: rgba(156, 163, 175, 0.2);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; overflow-x: hidden; }
+        * { box-sizing: border-box; }
+
+        .view { display: none; padding: 20px 16px 80px; min-height: 100vh; }
+        .view.active { display: block; }
+        
+        h1, h2, h3 { margin: 0 0 10px 0; color: var(--text-color); }
+        h1 { font-size: 24px; font-weight: 700; }
+        h2 { font-size: 20px; font-weight: 600; }
+        .subtitle { font-size: 14px; color: var(--hint-color); }
+
+        .card { background-color: var(--card-bg); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow); margin-bottom: 16px; border: 1px solid var(--border); transition: transform 0.2s; }
+        .user-card { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .user-card:active { transform: scale(0.98); }
+        
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+        .stat-item { display: flex; flex-direction: column; }
+        .stat-label { font-size: 12px; color: var(--hint-color); margin-bottom: 4px; }
+        .stat-val { font-size: 16px; font-weight: 600; }
+
+        input, select { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background-color: var(--bg-color); color: var(--text-color); font-size: 16px; outline: none; }
+        input:focus, select:focus { border-color: var(--btn-color); }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; color: var(--hint-color); }
+
+        .btn { width: 100%; padding: 14px; border: none; border-radius: var(--radius-md); font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn:active { opacity: 0.8; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background-color: var(--btn-color); color: var(--btn-text); }
+        .btn-danger { background-color: var(--danger); color: white; }
+        .btn-outline { background-color: transparent; border: 1px solid var(--border); color: var(--text-color); }
+        
+        .fab { position: fixed; bottom: 24px; right: 24px; width: 60px; height: 60px; border-radius: 30px; background-color: var(--btn-color); color: var(--btn-text); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; z-index: 100; border: none; }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .search-box { position: relative; margin-bottom: 16px; }
+        .search-box input { padding-left: 40px; margin-bottom: 0; }
+        .search-icon { position: absolute; left: 12px; top: 14px; fill: var(--hint-color); width: 20px; height: 20px; }
+
+        .tx-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--border); }
+        .tx-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .tx-info { flex: 1; }
+        .tx-desc { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+        .tx-meta { font-size: 12px; color: var(--hint-color); }
+        .tx-amount { font-size: 16px; font-weight: 700; text-align: right; }
+        .tx-actions { display: flex; gap: 8px; margin-top: 8px; }
+        .icon-btn { background: var(--bg-color); border: 1px solid var(--border); border-radius: 8px; padding: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+        .icon-btn svg { width: 16px; height: 16px; fill: var(--text-color); }
+        
+        .text-success { color: var(--success) !important; }
+        .text-danger { color: var(--danger) !important; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: flex-end; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { background: var(--card-bg); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 24px; transform: translateY(100%); transition: transform 0.3s; max-height: 90vh; overflow-y: auto; }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #333; color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 500; z-index: 2000; opacity: 0; transition: all 0.3s; }
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        #toast.error { background: var(--danger); }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--hint-color); }
+        .empty-state svg { width: 48px; height: 48px; fill: var(--border); margin-bottom: 12px; }
+
+        .loader-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--btn-color); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- Loader View -->
+    <div id="loader-view" class="view active">
+        <div class="loader-container">
+            <div class="spinner"></div>
+            <div style="color: var(--hint-color); font-weight: 500;">ডাটা লোড হচ্ছে...</div>
+        </div>
+    </div>
+
+    <!-- Home Dashboard -->
+    <div id="home-view" class="view">
+        <div class="header">
+            <div>
+                <h1>হিসাব খাতা</h1>
+                <div class="subtitle">আপনার সকল খাতার তালিকা</div>
+            </div>
+        </div>
+        
+        <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" id="search-account" placeholder="খাতা খুঁজুন..." oninput="App.UI.renderAccounts(this.value)">
+        </div>
+
+        <div id="account-list"></div>
+
+        <button class="fab" onclick="App.Modals.openAccountModal()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+    </div>
+
+    <!-- Individual Account Dashboard -->
+    <div id="account-view" class="view">
+        <div class="header" style="margin-bottom: 12px;">
+            <button class="icon-btn" onclick="App.Navigation.goHome()" style="border:none; padding:0; background:transparent;">
+                <svg width="24" height="24" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <h2 id="current-account-name" style="margin: 0; flex: 1; text-align: center;">-</h2>
+            <button class="icon-btn" onclick="App.Modals.openAccountActionModal()" style="border:none; background:transparent;">
+                <svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+            </button>
+        </div>
+
+        <div class="card" style="text-align: center; padding: 24px 16px;">
+            <div class="stat-label">বর্তমান ব্যালেন্স</div>
+            <div id="dash-balance" style="font-size: 32px; font-weight: 800; margin: 8px 0;">৳০</div>
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <span class="stat-label">মোট আয় (+)</span>
+                    <span id="dash-income" class="stat-val text-success">৳০</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">মোট ব্যয় (-)</span>
+                    <span id="dash-expense" class="stat-val text-danger">৳০</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-box" style="margin-top: 24px;">
+            <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" id="search-tx" placeholder="লেনদেন খুঁজুন..." oninput="App.UI.renderDashboard(this.value)">
+        </div>
+
+        <div class="card" style="padding: 0 16px;">
+            <div id="tx-list"></div>
+        </div>
+
+        <button class="fab" onclick="App.Modals.openTxModal()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-account" class="modal-overlay" onclick="App.Modals.closeOnClickOutside(event, 'modal-account')">
+        <div class="modal-content">
+            <h2 id="modal-account-title">নতুন খাতা তৈরি</h2>
+            <div class="form-group">
+                <label>ব্যক্তির বা খাতার নাম</label>
+                <input type="text" id="inp-account-name" placeholder="যেমন: সালাম, বাজার খরচ">
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn btn-outline" onclick="App.Modals.close('modal-account')">বাতিল</button>
+                <button class="btn btn-primary" id="btn-save-account" onclick="App.Actions.saveAccount()">সংরক্ষণ করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-account-action" class="modal-overlay" onclick="App.Modals.closeOnClickOutside(event, 'modal-account-action')">
+        <div class="modal-content">
+            <h2>খাতা সেটিংস</h2>
+            <button class="btn btn-outline" style="margin-bottom: 12px;" onclick="App.Modals.openAccountModal(App.State.currentAccount)">✏️ খাতার নাম পরিবর্তন করুন</button>
+            <button class="btn btn-danger" onclick="App.Modals.confirmDeleteAccount()">🗑️ সম্পূর্ণ খাতা মুছে ফেলুন</button>
+            <button class="btn btn-outline" style="margin-top: 12px; border: none;" onclick="App.Modals.close('modal-account-action')">বাতিল</button>
+        </div>
+    </div>
+
+    <div id="modal-tx" class="modal-overlay" onclick="App.Modals.closeOnClickOutside(event, 'modal-tx')">
+        <div class="modal-content">
+            <h2 id="modal-tx-title">হিসাব যোগ করুন</h2>
+            
+            <div class="stat-grid" style="border: none; padding: 0; margin-bottom: 12px;">
+                <button id="btn-type-income" class="btn btn-outline text-success" style="border-color: var(--success);" onclick="App.UI.selectTxType('income')">আয় (+)</button>
+                <button id="btn-type-expense" class="btn btn-outline text-danger" onclick="App.UI.selectTxType('expense')">ব্যয় (-)</button>
+            </div>
+            <input type="hidden" id="inp-tx-type" value="income">
+
+            <div class="form-group">
+                <label>বিবরণ</label>
+                <input type="text" id="inp-tx-desc" placeholder="যেমন: বেতন, বাজার, ধার">
+            </div>
+            
+            <div class="form-group">
+                <label>পরিমাণ (৳)</label>
+                <input type="number" id="inp-tx-amount" placeholder="0" min="0" step="any">
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn btn-outline" onclick="App.Modals.close('modal-tx')">বাতিল</button>
+                <button class="btn btn-primary" id="btn-save-tx" onclick="App.Actions.saveTransaction()">সংরক্ষণ করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-confirm" class="modal-overlay" onclick="App.Modals.closeOnClickOutside(event, 'modal-confirm')">
+        <div class="modal-content">
+            <h2 id="confirm-title" style="color: var(--danger);">সতর্কতা!</h2>
+            <p id="confirm-msg" style="color: var(--hint-color); margin-bottom: 24px;">আপনি কি নিশ্চিত?</p>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-outline" onclick="App.Modals.close('modal-confirm')">না, বাতিল</button>
+                <button class="btn btn-danger" id="btn-confirm-action">হ্যাঁ, মুছে ফেলুন</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">Message</div>
+
+<!-- ES Module Script for Firebase -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, setDoc, deleteDoc, doc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { firebaseConfig } from "./firebase-config.js";
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.ready();
+
+    const el = (tag, attrs = {}, children = []) => {
+        const element = document.createElement(tag);
+        for (const [key, val] of Object.entries(attrs)) {
+            if (key.startsWith('on') && typeof val === 'function') element.addEventListener(key.substring(2).toLowerCase(), val);
+            else if (key === 'className') element.className = val;
+            else if (key === 'text') element.textContent = val;
+            else if (key === 'html') element.innerHTML = val;
+            else if (key === 'style') Object.assign(element.style, val);
+            else element.setAttribute(key, val);
+        }
+        children.forEach(child => {
+            if (typeof child === 'string') element.appendChild(document.createTextNode(child));
+            else if (child instanceof Node) element.appendChild(child);
+        });
+        return element;
+    };
+
+    const Utils = {
+        generateId: () => Date.now().toString(36) + Math.random().toString(36).substring(2, 7),
+        formatMoney: (num) => parseFloat(num).toLocaleString('bn-BD', { minimumFractionDigits: 0, maximumFractionDigits: 2 }),
+        formatDate: (d) => new Date(d).toLocaleString('bn-BD', { hour12: true, year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        parseNum: (val) => { const n = parseFloat(val); return (isNaN(n) || n <= 0) ? 0 : n; }
+    };
+
+    window.App = {
+        Data: { users: [], accountDocIds: {}, transactions: {} },
+        State: { currentAccount: null, txEditMode: false, currentTxId: null, isSaving: false },
+
+        async init() {
+            try {
+                // Fetch Accounts with secure mappings
+                const accSnap = await getDocs(collection(db, "accounts"));
+                App.Data.users = [];
+                App.Data.accountDocIds = {};
+                
+                accSnap.docs.forEach(d => {
+                    const data = d.data();
+                    // Fallback to ID if old data doesn't have name field
+                    const name = data.name ? data.name : d.id; 
+                    App.Data.users.push(name);
+                    App.Data.accountDocIds[name] = d.id;
+                });
+
+                // Fetch All Transactions
+                const txSnap = await getDocs(collection(db, "transactions"));
+                App.Data.transactions = {};
+                txSnap.forEach(doc => {
+                    const tx = doc.data();
+                    if (!App.Data.transactions[tx.account]) App.Data.transactions[tx.account] = [];
+                    App.Data.transactions[tx.account].push(tx);
+                });
+
+                App.Navigation.goHome();
+            } catch (error) {
+                App.UI.showToast("ডাটা লোড করতে সমস্যা হয়েছে! ইন্টারনেট ও API Key চেক করুন।", true);
+                console.error(error);
+            }
+        },
+
+        Navigation: {
+            goHome() {
+                App.State.currentAccount = null;
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.getElementById('home-view').classList.add('active');
+                document.getElementById('search-account').value = '';
+                App.UI.renderAccounts();
+            },
+            openAccount(name) {
+                App.State.currentAccount = name;
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.getElementById('account-view').classList.add('active');
+                document.getElementById('current-account-name').textContent = name;
+                document.getElementById('search-tx').value = '';
+                App.UI.renderDashboard();
+            }
+        },
+
+        Actions: {
+            async saveAccount() {
+                const btn = document.getElementById('btn-save-account');
+                const inp = document.getElementById('inp-account-name');
+                let newName = inp.value.trim();
+                const oldName = App.State.currentAccount;
+                const isEdit = !!oldName;
+
+                if (!newName) return App.UI.showToast("নাম লিখুন", true);
+                const nameExists = App.Data.users.find(u => u.toLowerCase() === newName.toLowerCase());
+                if (nameExists && (!isEdit || oldName.toLowerCase() !== newName.toLowerCase())) return App.UI.showToast("এই নামে আগেই খাতা আছে!", true);
+
+                btn.disabled = true; btn.textContent = "সংরক্ষণ হচ্ছে...";
+
+                try {
+                    if (isEdit) {
+                        if(oldName !== newName) {
+                            const batch = writeBatch(db);
+                            const oldDocId = App.Data.accountDocIds[oldName];
+                            
+                            // Update Account Name securely
+                            batch.set(doc(db, "accounts", oldDocId), { name: newName }, { merge: true });
+                            
+                            const txsToMove = App.Data.transactions[oldName] || [];
+                            txsToMove.forEach(tx => {
+                                tx.account = newName; 
+                                batch.set(doc(db, "transactions", tx.id), tx);
+                            });
+                            await batch.commit();
+
+                            const idx = App.Data.users.indexOf(oldName);
+                            App.Data.users[idx] = newName;
+                            App.Data.accountDocIds[newName] = oldDocId;
+                            delete App.Data.accountDocIds[oldName];
+                            
+                            App.Data.transactions[newName] = txsToMove;
+                            delete App.Data.transactions[oldName];
+                            App.State.currentAccount = newName;
+                        }
+                    } else {
+                        // Generate safe ID for new account
+                        const newDocId = "acc_" + Utils.generateId();
+                        await setDoc(doc(db, "accounts", newDocId), { name: newName, createdAt: Date.now() });
+                        
+                        App.Data.users.unshift(newName);
+                        App.Data.accountDocIds[newName] = newDocId;
+                        App.Data.transactions[newName] = [];
+                    }
+
+                    App.Modals.close('modal-account'); App.Modals.close('modal-account-action');
+                    if (isEdit) { document.getElementById('current-account-name').textContent = newName; App.UI.renderDashboard(); } 
+                    else { App.UI.renderAccounts(); }
+                    App.UI.showToast("খাতা সংরক্ষিত হয়েছে");
+                } catch(e) {
+                    App.UI.showToast("এরর! আবার চেষ্টা করুন।", true); console.error(e);
+                } finally {
+                    btn.disabled = false; btn.textContent = "সংরক্ষণ করুন";
+                }
+            },
+
+            async deleteAccountConfirm() {
+                const name = App.State.currentAccount;
+                App.Modals.close('modal-confirm'); App.Modals.close('modal-account-action');
+                App.UI.showToast("মুছে ফেলা হচ্ছে...");
+
+                try {
+                    const batch = writeBatch(db);
+                    const txs = App.Data.transactions[name] || [];
+                    txs.forEach(tx => batch.delete(doc(db, "transactions", tx.id)));
+                    
+                    const docId = App.Data.accountDocIds[name];
+                    batch.delete(doc(db, "accounts", docId));
+                    await batch.commit();
+
+                    App.Data.users = App.Data.users.filter(u => u !== name);
+                    delete App.Data.transactions[name];
+                    delete App.Data.accountDocIds[name];
+                    App.Navigation.goHome();
+                    App.UI.showToast("খাতা মুছে ফেলা হয়েছে");
+                } catch (e) {
+                    App.UI.showToast("মুছে ফেলা সম্ভব হয়নি!", true); console.error(e);
+                }
+            },
+
+            async saveTransaction() {
+                const desc = document.getElementById('inp-tx-desc').value.trim();
+                const amount = Utils.parseNum(document.getElementById('inp-tx-amount').value);
+                const type = document.getElementById('inp-tx-type').value;
+                const btn = document.getElementById('btn-save-tx');
+                const account = App.State.currentAccount;
+
+                if (!desc) return App.UI.showToast("বিবরণ দিন", true);
+                if (amount <= 0) return App.UI.showToast("সঠিক পরিমাণ দিন", true);
+
+                btn.disabled = true; btn.textContent = "সংরক্ষণ হচ্ছে...";
+
+                const txObj = {
+                    id: App.State.currentTxId || Utils.generateId(),
+                    account: account,
+                    desc, amount, type,
+                    date: App.State.txEditMode ? App.Data.transactions[account].find(t=>t.id===App.State.currentTxId).date : Utils.formatDate(new Date()),
+                    timestamp: App.State.txEditMode ? App.Data.transactions[account].find(t=>t.id===App.State.currentTxId).timestamp : new Date().getTime()
+                };
+
+                try {
+                    await setDoc(doc(db, "transactions", txObj.id), txObj);
+                    
+                    if (App.State.txEditMode) {
+                        const idx = App.Data.transactions[account].findIndex(t => t.id === txObj.id);
+                        App.Data.transactions[account][idx] = txObj;
+                    } else {
+                        App.Data.transactions[account].unshift(txObj);
+                    }
+
+                    App.Modals.close('modal-tx'); App.UI.renderDashboard();
+                    App.UI.showToast("লেনদেন সংরক্ষিত হয়েছে");
+                } catch(e) {
+                    App.UI.showToast("সেভ করা যায়নি!", true); console.error(e);
+                } finally {
+                    btn.disabled = false; btn.textContent = "সংরক্ষণ করুন";
+                }
+            },
+
+            async deleteTxConfirm(id) {
+                const account = App.State.currentAccount;
+                App.Modals.close('modal-confirm'); App.UI.showToast("মুছে ফেলা হচ্ছে...");
+                try {
+                    await deleteDoc(doc(db, "transactions", id));
+                    App.Data.transactions[account] = App.Data.transactions[account].filter(t => t.id !== id);
+                    App.UI.renderDashboard();
+                    App.UI.showToast("মুছে ফেলা হয়েছে");
+                } catch(e) { App.UI.showToast("এরর হয়েছে!", true); console.error(e); }
+            }
+        },
+
+        UI: {
+            showToast(msg, isError = false) {
+                const t = document.getElementById('toast');
+                t.textContent = msg; t.className = isError ? 'error show' : 'show';
+                setTimeout(() => t.className = '', 3000);
+            },
+            
+            selectTxType(type) {
+                document.getElementById('inp-tx-type').value = type;
+                const btnInc = document.getElementById('btn-type-income');
+                const btnExp = document.getElementById('btn-type-expense');
+                if (type === 'income') {
+                    btnInc.style.borderColor = 'var(--success)'; btnInc.style.background = 'rgba(16, 185, 129, 0.1)';
+                    btnExp.style.borderColor = 'var(--border)'; btnExp.style.background = 'transparent';
+                } else {
+                    btnExp.style.borderColor = 'var(--danger)'; btnExp.style.background = 'rgba(239, 68, 68, 0.1)';
+                    btnInc.style.borderColor = 'var(--border)'; btnInc.style.background = 'transparent';
+                }
+            },
+
+            renderAccounts(filterQuery = '') {
+                const list = document.getElementById('account-list'); list.innerHTML = '';
+                const query = filterQuery.toLowerCase();
+                const filteredUsers = App.Data.users.filter(u => u.toLowerCase().includes(query));
+
+                if (filteredUsers.length === 0) {
+                    list.appendChild(el('div', { className: 'empty-state' }, [
+                        el('div', { html: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>' }),
+                        el('div', { text: query ? 'কোনো খাতা পাওয়া যায়নি' : 'কোনো খাতা নেই। "+ নতুন খাতা" তৈরি করুন।' })
+                    ]));
+                    return;
+                }
+
+                filteredUsers.forEach(name => {
+                    const txs = App.Data.transactions[name] || [];
+                    let bal = 0; txs.forEach(t => bal += (t.type==='income' ? t.amount : -t.amount));
+                    const card = el('div', { className: 'card user-card', onClick: () => App.Navigation.openAccount(name) }, [
+                        el('div', {}, [ el('div', { text: name, className: 'tx-desc' }), el('div', { text: `${txs.length} টি লেনদেন`, className: 'tx-meta' }) ]),
+                        el('div', { text: `৳${Utils.formatMoney(bal)}`, className: `tx-amount ${bal < 0 ? 'text-danger' : 'text-success'}` })
+                    ]);
+                    list.appendChild(card);
+                });
+            },
+
+            renderDashboard(filterQuery = '') {
+                if (!App.State.currentAccount) return;
+                const txs = App.Data.transactions[App.State.currentAccount] || [];
+                
+                let totalInc = 0, totalExp = 0;
+                txs.forEach(t => { if (t.type === 'income') totalInc += t.amount; else totalExp += t.amount; });
+                const bal = totalInc - totalExp;
+
+                document.getElementById('dash-balance').textContent = `৳${Utils.formatMoney(bal)}`;
+                document.getElementById('dash-balance').className = bal < 0 ? 'text-danger' : 'text-success';
+                document.getElementById('dash-income').textContent = `৳${Utils.formatMoney(totalInc)}`;
+                document.getElementById('dash-expense').textContent = `৳${Utils.formatMoney(totalExp)}`;
+
+                const list = document.getElementById('tx-list'); list.innerHTML = '';
+                const query = filterQuery.toLowerCase();
+                const filteredTxs = txs.filter(t => t.desc.toLowerCase().includes(query));
+
+                if (filteredTxs.length === 0) {
+                    list.appendChild(el('div', { className: 'empty-state', style: { padding: '20px 10px' } }, [
+                        el('div', { text: query ? 'কোনো লেনদেন পাওয়া যায়নি' : 'এখনো কোনো লেনদেন যোগ করা হয়নি' })
+                    ])); return;
+                }
+
+                const sorted = [...filteredTxs].sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                sorted.forEach(t => {
+                    const isInc = t.type === 'income'; const sign = isInc ? '+' : '-'; const color = isInc ? 'text-success' : 'text-danger';
+                    const item = el('div', { className: 'tx-item' }, [
+                        el('div', { className: 'tx-info' }, [ el('div', { className: 'tx-desc', text: t.desc }), el('div', { className: 'tx-meta', text: t.date || '' }) ]),
+                        el('div', { style: { textAlign: 'right' } }, [
+                            el('div', { className: `tx-amount ${color}`, text: `${sign}৳${Utils.formatMoney(t.amount)}` }),
+                            el('div', { className: 'tx-actions' }, [
+                                el('button', { className: 'icon-btn', onClick: () => App.Modals.openTxModal(t) }, [ el('div', { html: '<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.995.995 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>' }) ]),
+                                el('button', { className: 'icon-btn', onClick: () => App.Modals.confirmDeleteTx(t) }, [ el('div', { html: '<svg viewBox="0 0 24 24" style="fill: var(--danger);"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>' }) ])
+                            ])
+                        ])
+                    ]);
+                    list.appendChild(item);
+                });
+            }
+        }
+    };
+
+    App.init();
+</script>
+</body>
+</html>
