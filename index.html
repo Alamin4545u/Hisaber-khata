@@ -10,159 +10,237 @@
 <script src="firebase-config.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#0e2244;--navy2:#16315f;--gold:#d4a73c;--bg:#eef1f6;--sf:#fff;--ink:#14213d;--mut:#6b7893;--ln:#e1e6ef;--inc:#0b8f63;--exp:#c93a52;--incbg:#e2f5ed;--expbg:#fbe7eb;--sb:env(safe-area-inset-bottom,0px);--f:"Hind Siliguri",system-ui,-apple-system,"Segoe UI",sans-serif}
-:root[data-theme=dark]{--bg:#0a1220;--sf:#121d33;--ink:#e8edf7;--mut:#8b99b8;--ln:#22304d;--inc:#3ddc9f;--exp:#ff7b90;--incbg:#12372b;--expbg:#3a1c25;--navy:#0a1630;--navy2:#10224a}
+:root{
+  --bg:#eaf4f4;--bgfx:radial-gradient(75% 34% at 50% -6%,rgba(20,184,166,.2),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(99,102,241,.08),transparent 60%);
+  --card:#ffffff;--card2:#f3f8f8;--cb:#d9e6e8;--ink:#0f1d33;--mut:#66768e;
+  --inc:#0a9f6e;--exp:#d63a5a;--gold:#d9a02a;
+  --inc-bg:rgba(10,159,110,.1);--inc-bd:rgba(10,159,110,.35);--exp-bg:rgba(214,58,90,.09);--exp-bd:rgba(214,58,90,.32);
+  --hero-bg:linear-gradient(135deg,#c9f2e8 0%,#e3f1ff 80%);--hero-bd:rgba(20,160,140,.4);--hero-ink:#0f1d33;--hero-mut:#47676f;
+  --sheet:#ffffff;--sh:0 10px 26px -14px rgba(15,29,51,.22);
+  --f:"Hind Siliguri",system-ui,-apple-system,"Segoe UI",sans-serif;--sb:env(safe-area-inset-bottom,0px);
+  --gold-grad:linear-gradient(145deg,#ffe08a,#f2b630 55%,#c98a10);
+}
+:root[data-theme=dark]{
+  color-scheme:dark;
+  --bg:#050c1b;--bgfx:radial-gradient(75% 34% at 50% -6%,rgba(20,184,166,.26),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(99,102,241,.14),transparent 60%);
+  --card:linear-gradient(145deg,rgba(18,38,70,.92),rgba(10,22,44,.92));--card2:rgba(255,255,255,.05);--cb:rgba(120,160,255,.17);--ink:#f1f5ff;--mut:#8c9bbd;
+  --inc:#34e8a8;--exp:#ff6a86;--gold:#f2c14e;
+  --inc-bg:rgba(30,210,150,.14);--inc-bd:rgba(52,232,168,.45);--exp-bg:rgba(255,90,125,.13);--exp-bd:rgba(255,106,134,.45);
+  --hero-bg:linear-gradient(135deg,rgba(17,92,98,.9) 0%,rgba(8,32,60,.96) 72%);--hero-bd:rgba(60,230,200,.38);--hero-ink:#fff;--hero-mut:#b7ccd6;
+  --sheet:linear-gradient(180deg,#10224a 0%,#091428 100%);--sh:0 14px 30px -16px rgba(0,0,0,.8);
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f)}
-body{user-select:none;-webkit-user-select:none}
-button,input,textarea{font:inherit;color:inherit}button{border:0;background:none;cursor:pointer}
+html,body{margin:0;color:var(--ink);font:15px/1.5 var(--f);font-variant-numeric:tabular-nums}
+body{background:var(--bgfx),var(--bg);background-attachment:fixed;min-height:100vh;user-select:none;-webkit-user-select:none;-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}button{border:0;background:none;cursor:pointer;transition:transform .15s,opacity .2s}
+button:active{transform:scale(.97)}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-.view{display:none;min-height:100vh;padding-bottom:calc(120px + var(--sb))}.view.on{display:block}
+i.ic{display:inline-grid;place-items:center;font-style:normal;flex:none}
+i.ic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.view{display:none;min-height:100vh;padding:calc(12px + env(safe-area-inset-top,0px)) 16px calc(150px + var(--sb))}
+.view.on{display:block;animation:vin .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes vin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .inc{color:var(--inc)}.exp{color:var(--exp)}
 
-.hd{background:var(--navy);color:#fff;padding:calc(14px + env(safe-area-inset-top,0px)) 18px 0;border-radius:0 0 26px 26px;position:relative}
-.hd::after{content:"";position:absolute;left:18px;right:18px;bottom:0;height:3px;background:var(--gold);border-radius:3px 3px 0 0}
-.bar{display:flex;align-items:center;gap:10px;min-height:44px}
-.bar h1{margin:0;font-size:20px;font-weight:700;flex:1}
-.bar h2{margin:0;font-size:18px;font-weight:600;flex:1;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ib{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.1);color:#fff;flex:none}
-.ib svg,.ic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.net{padding:14px 0 22px}
-.net .l{font-size:13px;color:#a9b8d8}
-.net .v{font-size:38px;font-weight:700;letter-spacing:-.5px;line-height:1.2}
-.tri{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:14px;border-top:1px solid rgba(255,255,255,.14);padding-top:12px}
-.tri div+div{border-left:1px solid rgba(255,255,255,.14);padding-left:16px}
-.tri .l{font-size:12px;color:#a9b8d8}.tri .v{font-size:17px;font-weight:600}
-.tri .gi{color:#6ff0b8}.tri .ge{color:#ff9fb0}
+/* header bar */
+.bar{display:flex;align-items:center;gap:10px;min-height:48px;margin-bottom:10px}
+.bar h1{margin:0;flex:1;text-align:center;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
+.bar h1 i.ic{color:var(--gold)}.bar h1 i.ic svg{width:26px;height:26px}
+.bar h2{margin:0;flex:1;text-align:center;font-size:20px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ib{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:none;color:var(--gold)}
+.ib.bx{background:var(--card2);border:1px solid var(--cb)}
 
-.bd{padding:18px 16px 0}
-.sr{position:relative;margin-bottom:12px}
-.sr svg{position:absolute;left:14px;top:13px;width:18px;height:18px;fill:none;stroke:var(--mut);stroke-width:2;stroke-linecap:round}
-.sr input{width:100%;height:46px;border:1px solid var(--ln);border-radius:12px;background:var(--sf);padding:0 14px 0 42px;outline:none}
-.sr input:focus{border-color:var(--navy2)}
-.cap{display:flex;justify-content:space-between;font-size:13px;color:var(--mut);margin:4px 2px 8px;font-weight:500}
-.panel{background:var(--sf);border:1px solid var(--ln);border-radius:16px;overflow:hidden}
-.ac{display:flex;align-items:center;gap:12px;padding:14px 16px;width:100%;text-align:left;border-bottom:1px solid var(--ln)}
-.ac:last-child{border-bottom:0}.ac:active{background:var(--bg)}
-.ac .no{width:36px;height:36px;border-radius:10px;background:var(--navy);color:var(--gold);display:grid;place-items:center;font-weight:700;flex:none}
-.ac .g{flex:1;min-width:0}.ac .n{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ac .m{font-size:12px;color:var(--mut)}.ac .a{font-weight:700;text-align:right;white-space:nowrap}.ac .a small{display:block;font-size:11px;font-weight:400;color:var(--mut)}
+/* hero */
+.hero{position:relative;overflow:hidden;border-radius:26px;padding:18px 20px 20px;background:var(--hero-bg);border:1px solid var(--hero-bd);color:var(--hero-ink);
+  box-shadow:0 20px 40px -22px rgba(20,184,166,.65),inset 0 1px 0 rgba(255,255,255,.14)}
+.hero::before{content:"";position:absolute;left:0;top:24%;bottom:24%;width:4px;border-radius:0 4px 4px 0;background:var(--inc);box-shadow:0 0 16px var(--inc)}
+.hero .l{font-size:14px;color:var(--hero-mut);font-weight:500}
+.hero .v{font-size:40px;font-weight:700;line-height:1.2;letter-spacing:-.4px;display:flex;align-items:center;gap:8px}
+:root[data-theme=dark] .hero .v>span:first-child{background:linear-gradient(180deg,#fff 40%,#ffe9ae);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .ar{display:inline-grid}.hero .ar svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.hero .deco{position:absolute;right:14px;top:10px;width:74px;height:74px;fill:rgba(60,230,190,.16);stroke:rgba(80,240,200,.55);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 18px}
+.mini{display:flex;align-items:center;gap:10px;padding:12px;border-radius:18px;border:1px solid;min-width:0}
+.mini.gi{background:var(--inc-bg);border-color:var(--inc-bd)}.mini.ge{background:var(--exp-bg);border-color:var(--exp-bd)}
+.mini .dot{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;color:#04261b}
+.mini.gi .dot{background:var(--inc)}.mini.ge .dot{background:var(--exp);color:#3a0614}
+.mini .dot svg{width:17px!important;height:17px!important;stroke-width:2.6!important}
+.mini .l{font-size:12px;color:var(--mut)}.mini .v{font-size:17px;font-weight:700;white-space:nowrap}
+.mini.gi .v{color:var(--inc)}.mini.ge .v{color:var(--exp)}
 
-.chips{display:flex;gap:8px;margin-bottom:12px}
-.chip{flex:1;height:38px;border-radius:10px;border:1px solid var(--ln);background:var(--sf);color:var(--mut);font-weight:500;font-size:14px}
-.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
-.dh{display:flex;justify-content:space-between;padding:9px 16px;background:var(--bg);font-size:12px;font-weight:600;color:var(--mut);border-bottom:1px solid var(--ln)}
-.tx{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:12px 16px;border-bottom:1px solid var(--ln);align-items:center}
-.tx:last-child{border-bottom:0}
-.tx .d{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tx .a{font-weight:700;text-align:right;white-space:nowrap}
-.tx .m,.tx .j{font-size:12px;color:var(--mut)}.tx .j{text-align:right}
-.tx .ac2{grid-column:1/3;display:flex;gap:8px;margin-top:6px}
-.sm{height:28px;padding:0 12px;border-radius:8px;border:1px solid var(--ln);font-size:12px;font-weight:500;color:var(--mut)}
-.sm.r{color:var(--exp)}
-.emp{text-align:center;padding:42px 20px;color:var(--mut)}.emp b{display:block;color:var(--ink);font-size:16px}
+/* search, chips */
+.sr{position:relative;margin-bottom:14px}
+.sr i.ic{position:absolute;left:15px;top:13px;color:var(--mut)}
+.sr input{width:100%;height:48px;border:1px solid var(--cb);border-radius:16px;background:var(--card);padding:0 14px 0 46px;outline:none;box-shadow:var(--sh);user-select:text;-webkit-user-select:text;transition:border-color .2s,box-shadow .2s}
+.sr input:focus{border-color:var(--inc);box-shadow:0 0 0 4px var(--inc-bg)}
+.cap{display:flex;justify-content:space-between;align-items:center;margin:4px 4px 12px;font-size:16px;font-weight:700}
+.cap span+span{font-size:13px;font-weight:500;color:var(--mut)}
+.badge{background:var(--card2);border:1px solid var(--cb);padding:1px 10px;border-radius:999px}
+.chips{display:flex;gap:10px;margin-bottom:14px}
+.chip{flex:1;height:38px;border-radius:999px;border:1px solid var(--cb);background:var(--card);color:var(--mut);font-weight:600;font-size:14px}
+.chip.on{background:linear-gradient(135deg,#2be3a4,#0ea37a);border-color:transparent;color:#032418;box-shadow:0 8px 18px -8px rgba(30,220,160,.7)}
 
-.nav{position:fixed;left:0;right:0;bottom:0;background:var(--sf);border-top:1px solid var(--ln);display:flex;padding:6px 0 calc(6px + var(--sb));z-index:40}
-.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--mut);font-weight:500;padding:4px}
-.nav button.on{color:var(--navy2)}:root[data-theme=dark] .nav button.on{color:var(--gold)}
-.nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.fab{position:fixed;right:18px;bottom:calc(78px + var(--sb));height:54px;padding:0 20px;border-radius:16px;background:var(--gold);color:#1a1405;font-weight:700;display:flex;align-items:center;gap:8px;box-shadow:0 8px 20px rgba(14,34,68,.3);z-index:50}
-.fab.hi{bottom:calc(24px + var(--sb))}
-.fab svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
+/* lists */
+.panel{display:flex;flex-direction:column;gap:10px}
+.av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;flex:none;color:#fff;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--c) 78%,#fff),var(--c));
+  box-shadow:0 8px 16px -6px color-mix(in srgb,var(--c) 75%,transparent),inset 0 1px 0 rgba(255,255,255,.4)}
+.av svg{width:22px!important;height:22px!important}
+.ac{display:flex;align-items:center;gap:14px;padding:12px 14px;width:100%;text-align:left;border-radius:20px;border:1px solid var(--cb);background:var(--card);box-shadow:var(--sh);animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+.ac:nth-child(2){animation-delay:.05s}.ac:nth-child(3){animation-delay:.1s}.ac:nth-child(4){animation-delay:.15s}.ac:nth-child(n+5){animation-delay:.2s}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.ac .g{flex:1;min-width:0}.ac .n{font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ac .m{font-size:12.5px;color:var(--mut)}.ac .a{font-weight:700;font-size:16px;white-space:nowrap}
+.ac .chv{color:var(--mut)}.ac .chv svg{width:18px;height:18px}
+.dh{font-size:13px;font-weight:600;color:var(--mut);margin:8px 4px 0}
+.tx{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;align-items:center;padding:11px 14px;border-radius:20px;border:1px solid var(--cb);background:var(--card);box-shadow:var(--sh);animation:rise .45s cubic-bezier(.2,.8,.2,1) both}
+.tx .av{grid-row:1/3}
+.tx .d{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;align-self:end}
+.tx .m{font-size:12px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;align-self:start}
+.tx .a{font-weight:700;font-size:16px;white-space:nowrap;text-align:right;align-self:end}
+.tx .j{font-size:12px;color:var(--mut);text-align:right;align-self:start}
+.tx .ac2{grid-column:1/-1;display:none;gap:8px;margin-top:8px;padding-top:10px;border-top:1px dashed var(--cb)}
+.tx.open .ac2{display:flex}
+.sm{height:32px;padding:0 16px;border-radius:999px;border:1px solid var(--cb);background:var(--card2);font-size:13px;font-weight:600;color:var(--ink)}
+.sm.r{color:var(--exp);background:var(--exp-bg);border-color:var(--exp-bd)}
+.sm.g{color:var(--inc);background:transparent;border-color:var(--inc-bd);flex:none}
+.emp{text-align:center;padding:44px 20px;color:var(--mut);border-radius:20px;border:1px dashed var(--cb)}.emp b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
 
-.ov{position:fixed;inset:0;background:rgba(6,12,26,.6);z-index:100;display:none;align-items:flex-end;justify-content:center}.ov.on{display:flex}
-.sh{background:var(--sf);width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:10px 20px calc(20px + var(--sb));max-height:92vh;overflow:auto}
-.gr{width:40px;height:4px;border-radius:2px;background:var(--ln);margin:0 auto 14px}
-.sh h3{margin:0 0 12px;font-size:19px}.sh p{margin:0 0 16px;color:var(--mut);font-size:14px}
-label{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;font-weight:500}
-.fld{width:100%;height:50px;border:1px solid var(--ln);border-radius:12px;background:var(--bg);padding:0 14px;margin-bottom:14px;outline:none;user-select:text;-webkit-user-select:text}
-textarea.fld{height:110px;padding:10px 14px;resize:none;font-size:12px}
-.fld:focus{border-color:var(--navy2);background:var(--sf)}
-.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg);padding:4px;border-radius:12px;margin-bottom:16px}
-.seg button{height:42px;border-radius:9px;font-weight:600;color:var(--mut)}
-.seg .i.on{background:var(--incbg);color:var(--inc)}.seg .e.on{background:var(--expbg);color:var(--exp)}
+/* nav & fab */
+.nav{position:fixed;left:14px;right:14px;bottom:calc(12px + var(--sb));display:flex;padding:6px;z-index:40;border-radius:26px;
+  background:color-mix(in srgb,var(--bg) 70%,transparent);border:1px solid var(--cb);
+  -webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);box-shadow:0 18px 40px -14px rgba(0,0,0,.5)}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:12.5px;color:var(--mut);font-weight:600;padding:7px 4px;border-radius:20px}
+.nav button i.ic svg{width:24px;height:24px}
+.nav button.on{color:var(--gold)}.nav button.on i.ic{filter:drop-shadow(0 0 8px rgba(242,193,78,.65))}
+.fab{position:fixed;right:20px;bottom:calc(94px + var(--sb));display:flex;flex-direction:column;align-items:center;gap:2px;z-index:50}
+.fab.hi{bottom:calc(26px + var(--sb))}
+.fab .pl{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:var(--gold-grad);color:#2a1c02;position:relative;overflow:hidden;
+  box-shadow:0 14px 28px -8px rgba(201,138,16,.75),inset 0 1px 0 rgba(255,255,255,.6)}
+.fab .pl svg{width:26px;height:26px;stroke-width:2.8}
+.fab .pl::after{content:"";position:absolute;top:0;left:-70%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);animation:shine 4.5s ease-in-out infinite}
+@keyframes shine{0%,60%{left:-70%}100%{left:150%}}
+.fab small{font-size:12px;font-weight:700;color:var(--gold);text-shadow:0 1px 8px rgba(0,0,0,.4)}
+
+/* sheets */
+.ov{position:fixed;inset:0;background:rgba(3,8,20,.66);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.ov.on{display:flex;animation:fade .25s}@keyframes fade{from{opacity:0}to{opacity:1}}
+.sh{background:var(--sheet);width:100%;max-width:520px;border-radius:30px 30px 0 0;padding:10px 20px calc(22px + var(--sb));max-height:92vh;overflow:auto;
+  border:1px solid var(--cb);border-bottom:0;border-top-color:var(--inc-bd);box-shadow:0 -20px 50px -20px rgba(20,184,166,.35);animation:sheet .38s cubic-bezier(.2,.9,.25,1)}
+@keyframes sheet{from{transform:translateY(100%)}to{transform:none}}
+.gr{width:44px;height:5px;border-radius:3px;background:var(--cb);margin:0 auto 16px}
+.sh h3{margin:0 0 14px;font-size:21px;display:flex;align-items:center;justify-content:space-between}
+.sh h3 .x{color:var(--mut);width:36px;height:36px;display:grid;place-items:center}
+.sh p{margin:0 0 16px;color:var(--mut);font-size:14px}
+label{display:block;font-size:14px;color:var(--ink);margin-bottom:6px;font-weight:600}
+.fw{position:relative}.fw .fi{position:absolute;right:14px;top:15px;color:var(--mut);pointer-events:none}.fw .fld{padding-right:46px}
+.fld{width:100%;height:52px;border:1px solid var(--cb);border-radius:16px;background:var(--card2);padding:0 16px;margin-bottom:14px;outline:none;user-select:text;-webkit-user-select:text;transition:border-color .2s,box-shadow .2s;font-family:var(--f)}
+textarea.fld{height:100px;padding:12px 16px;resize:none;font-size:13px}
+.fld:focus{border-color:var(--inc);box-shadow:0 0 0 4px var(--inc-bg)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.seg button{height:48px;border-radius:16px;font-weight:700;border:1px solid var(--cb);background:var(--card2);color:var(--mut);display:flex;align-items:center;justify-content:center;gap:8px}
+.seg .i.on{background:var(--inc-bg);border-color:var(--inc-bd);color:var(--inc)}
+.seg .e.on{background:var(--exp-bg);border-color:var(--exp-bd);color:var(--exp)}
 .row{display:flex;gap:10px}
-.btn{flex:1;height:50px;border-radius:12px;font-weight:600;border:1px solid var(--ln);display:flex;align-items:center;justify-content:center;gap:8px}
-.btn.p{background:var(--navy);border-color:var(--navy);color:#fff}.btn.d{background:var(--exp);border-color:var(--exp);color:#fff}
-.btn:disabled{opacity:.5}.btn:active{transform:scale(.98)}
-.col{display:flex;flex-direction:column;gap:10px}
-.tl{padding:16px;display:flex;flex-direction:column;gap:10px}
-.tl h4{margin:0;font-size:16px}.tl p{margin:0;font-size:13px;color:var(--mut)}
-.bin{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--ln)}.bin:last-child{border-bottom:0}
-.bin .g{flex:1;min-width:0}.bin .n{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bin .m{font-size:12px;color:var(--mut)}
-.toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-90px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:12px;font-weight:500;font-size:14px;z-index:300;transition:transform .28s;max-width:90vw;text-align:center}
-.toast.show{transform:translate(-50%,0)}.toast.err{background:var(--exp);color:#fff}
+.btn{flex:1;height:52px;border-radius:16px;font-weight:600;border:1px solid var(--cb);background:var(--card2);display:flex;align-items:center;justify-content:center;gap:8px;color:var(--ink)}
+.btn.p{background:linear-gradient(135deg,#1fd69a,#0b8f66);border-color:transparent;color:#fff;box-shadow:0 12px 24px -10px rgba(20,200,150,.8)}
+.btn.g{background:var(--gold-grad);border-color:transparent;color:#2a1c02;box-shadow:0 12px 24px -10px rgba(201,138,16,.8)}
+.btn.b{background:linear-gradient(135deg,#2f7bff,#1450d6);border-color:transparent;color:#fff;box-shadow:0 12px 24px -10px rgba(47,123,255,.8)}
+.btn.d{background:linear-gradient(135deg,#e4506a,#b82b46);border-color:transparent;color:#fff}
+.btn.dl{color:var(--exp);border-color:var(--exp-bd);background:var(--exp-bg);justify-content:flex-start;padding:0 18px}
+.btn.ol{justify-content:flex-start;padding:0 18px}
+.btn:disabled{opacity:.5}
+.col{display:flex;flex-direction:column;gap:12px}
+.panel.tl{padding:18px;gap:10px;border-radius:22px;border:1px solid var(--cb);background:var(--card);box-shadow:var(--sh)}
+.tl h4{margin:0;font-size:17px;display:flex;align-items:center;gap:8px}.tl h4 i.ic{color:var(--gold)}
+.tl p{margin:0;font-size:13px;color:var(--mut)}
+.tl input[type=file]{font-size:13px;color:var(--mut)}
+.bin{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;border:1px solid var(--cb);background:var(--card);box-shadow:var(--sh)}
+.bin .g{flex:1;min-width:0}.bin .n{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bin .m{font-size:12px;color:var(--mut)}
+.bin .av{width:40px;height:40px}
+.toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-110px);padding:12px 22px;border-radius:16px;font-weight:600;font-size:14px;z-index:300;
+  transition:transform .4s cubic-bezier(.2,.9,.25,1);max-width:90vw;text-align:center;color:#fff;background:rgba(8,26,50,.94);border:1px solid var(--inc-bd);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 14px 30px -10px rgba(0,0,0,.55)}
+.toast.show{transform:translate(-50%,0)}.toast.err{background:rgba(176,42,66,.96);border-color:rgba(255,255,255,.25)}
 .ld{display:grid;place-items:center;height:80vh;text-align:center;color:var(--mut)}
-.sp{width:34px;height:34px;border:3px solid var(--ln);border-top-color:var(--gold);border-radius:50%;animation:s .8s linear infinite;margin:0 auto 12px}@keyframes s{to{transform:rotate(360deg)}}
+.ld .moon{color:var(--gold);filter:drop-shadow(0 0 16px rgba(242,193,78,.6))}.ld .moon svg{width:46px;height:46px}
+.ld .brand{font-size:38px;font-weight:700;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.3}
+.ld .tag{color:var(--gold);font-weight:500;margin-bottom:22px}
+.sp{width:36px;height:36px;border:3px solid var(--cb);border-top-color:var(--gold);border-radius:50%;animation:s .8s linear infinite;margin:0 auto 12px}@keyframes s{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div id="v-load" class="view on"><div class="ld"><div><div class="sp"></div><div id="ld-t">ডাটা লোড হচ্ছে...</div></div></div></div>
+<div id="v-load" class="view on"><div class="ld"><div>
+  <div class="moon"><i class="ic" data-i="moon"></i></div><div class="brand">হিসাব খাতা</div><div class="tag">আপনার টাকার, আপনার নিয়ন্ত্রণ</div>
+  <div class="sp"></div><div id="ld-t">ডাটা লোড হচ্ছে...</div></div></div></div>
 
 <div id="v-home" class="view">
-  <div class="hd">
-    <div class="bar"><h1>হিসাব খাতা</h1><button class="ib" onclick="App.init()" aria-label="রিফ্রেশ"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button></div>
-    <div class="net"><div class="l">সব খাতার নিট জের</div><div class="v" id="h-n">৳০</div>
-      <div class="tri"><div><div class="l">মোট জমা</div><div class="v gi" id="h-i">৳০</div></div><div><div class="l">মোট খরচ</div><div class="v ge" id="h-e">৳০</div></div></div></div>
+  <div class="bar"><button class="ib" onclick="App.UI.theme()" aria-label="থিম"><i class="ic" id="th-i"></i></button><h1><i class="ic" data-i="wallet"></i>হিসাব খাতা</h1><button class="ib" onclick="App.init()" aria-label="রিফ্রেশ"><i class="ic" data-i="refresh"></i></button></div>
+  <div class="hero">
+    <svg class="deco" viewBox="0 0 64 64"><path d="M32 60V28"/><path d="M32 36C20 36 12 28 12 14c12 0 20 8 20 22z"/><path d="M32 30C32 18 40 8 54 8c0 12-8 22-22 22z"/></svg>
+    <div class="l">সব খাতার নিট জের</div><div class="v"><span id="h-n">৳০</span><i class="ar" id="h-ar"></i></div>
   </div>
-  <div class="bd">
-    <div class="sr"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q-a" placeholder="খাতা খুঁজুন" oninput="App.UI.accounts()"></div>
-    <div class="cap"><span>খাতার তালিকা</span><span id="h-c"></span></div>
-    <div class="panel" id="al"></div>
+  <div class="duo">
+    <div class="mini gi"><span class="dot"><i class="ic" data-i="in"></i></span><div><div class="l">মোট জমা</div><div class="v" id="h-i">৳০</div></div></div>
+    <div class="mini ge"><span class="dot"><i class="ic" data-i="out"></i></span><div><div class="l">মোট খরচ</div><div class="v" id="h-e">৳০</div></div></div>
   </div>
-  <button class="fab" onclick="App.Sh.account()"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>নতুন খাতা</button>
+  <div class="sr"><i class="ic" data-i="search"></i><input id="q-a" placeholder="খাতা খুঁজুন..." oninput="App.UI.accounts()"></div>
+  <div class="cap"><span>খাতার তালিকা</span><span id="h-c"></span></div>
+  <div class="panel" id="al"></div>
+  <button class="fab" onclick="App.Sh.account()"><span class="pl"><i class="ic" data-i="plus"></i></span><small>নতুন খাতা</small></button>
 </div>
 
 <div id="v-acc" class="view">
-  <div class="hd">
-    <div class="bar"><button class="ib" onclick="App.Nav.home()" aria-label="ফিরে যান"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h2 id="a-n">-</h2><button class="ib" onclick="App.Sh.open('s-menu')" aria-label="অপশন"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button></div>
-    <div class="net"><div class="l">বর্তমান জের</div><div class="v" id="a-b">৳০</div>
-      <div class="tri"><div><div class="l">জমা</div><div class="v gi" id="a-i">৳০</div></div><div><div class="l">খরচ</div><div class="v ge" id="a-e">৳০</div></div></div></div>
+  <div class="bar"><button class="ib" onclick="App.Nav.home()" aria-label="ফিরে যান"><i class="ic" data-i="back"></i></button><h2 id="a-n">-</h2><button class="ib" onclick="App.Sh.open('s-menu')" aria-label="অপশন"><i class="ic" data-i="dots"></i></button></div>
+  <div class="hero">
+    <svg class="deco" viewBox="0 0 24 24" style="stroke-width:.9"><path d="M3 7a2 2 0 0 1 2-2h13v4"/><path d="M3 7v11a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1H5a2 2 0 0 1-2-2z"/><circle cx="16.5" cy="14.5" r="1"/></svg>
+    <div class="l">বর্তমান জের</div><div class="v"><span id="a-b">৳০</span></div>
   </div>
-  <div class="bd">
-    <div class="sr"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q-t" placeholder="লেনদেন খুঁজুন" oninput="App.UI.dash()"></div>
-    <div class="chips" id="chips"><button class="chip on" data-f="all" onclick="App.UI.filter('all')">সব</button><button class="chip" data-f="income" onclick="App.UI.filter('income')">জমা</button><button class="chip" data-f="expense" onclick="App.UI.filter('expense')">খরচ</button></div>
-    <div class="panel" id="tl"></div>
+  <div class="duo">
+    <div class="mini gi"><span class="dot"><i class="ic" data-i="in"></i></span><div><div class="l">জমা</div><div class="v" id="a-i">৳০</div></div></div>
+    <div class="mini ge"><span class="dot"><i class="ic" data-i="out"></i></span><div><div class="l">খরচ</div><div class="v" id="a-e">৳০</div></div></div>
   </div>
-  <button class="fab hi" onclick="App.Sh.tx()"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>নতুন হিসাব</button>
+  <div class="chips" id="chips"><button class="chip on" data-f="all" onclick="App.UI.filter('all')">সব</button><button class="chip" data-f="income" onclick="App.UI.filter('income')">জমা</button><button class="chip" data-f="expense" onclick="App.UI.filter('expense')">খরচ</button></div>
+  <div class="sr"><i class="ic" data-i="search"></i><input id="q-t" placeholder="লেনদেন খুঁজুন..." oninput="App.UI.dash()"></div>
+  <div class="panel" id="tl"></div>
+  <button class="fab hi" onclick="App.Sh.tx()"><span class="pl"><i class="ic" data-i="plus"></i></span><small>নতুন হিসাব</small></button>
 </div>
 
 <div id="v-tools" class="view">
-  <div class="hd"><div class="bar"><h1>ব্যাকআপ ও রিকভারি</h1></div><div style="height:22px"></div></div>
-  <div class="bd">
+  <div class="bar"><button class="ib" onclick="App.Nav.home()" aria-label="ফিরে যান"><i class="ic" data-i="back"></i></button><h2>ব্যাকআপ ও রিকভারি</h2><span style="width:42px"></span></div>
+  <div class="panel">
     <div class="panel tl">
-      <h4>ব্যাকআপ নিন</h4><p>সব খাতা ও লেনদেন একটি ফাইলে সেভ হবে। নিয়মিত ব্যাকআপ রাখুন।</p>
-      <div class="row"><button class="btn p" onclick="App.Bk.download()">ফাইল ডাউনলোড</button><button class="btn" onclick="App.Bk.copy()">কপি করুন</button></div>
+      <h4><i class="ic" data-i="download"></i>ব্যাকআপ নিন</h4><p>সব খাতা ও লেনদেন একটি ফাইলে সেভ হবে। নিয়মিত ব্যাকআপ রাখুন।</p>
+      <div class="row"><button class="btn g" onclick="App.Bk.download()"><i class="ic" data-i="download"></i>ফাইল ডাউনলোড</button><button class="btn" onclick="App.Bk.copy()"><i class="ic" data-i="copy"></i>কপি করুন</button></div>
     </div>
-    <div style="height:14px"></div>
     <div class="panel tl">
-      <h4>ব্যাকআপ থেকে ফিরিয়ে আনুন</h4><p>শুধু হারানো খাতা ও লেনদেন যোগ হবে। আগের কোনো ডাটা মুছবে না বা বদলাবে না।</p>
+      <h4><i class="ic" data-i="cloudup"></i>ব্যাকআপ থেকে ফিরিয়ে আনুন</h4><p>শুধু হারানো খাতা ও লেনদেন যোগ হবে। আগের কোনো ডাটা মুছবে না বা বদলাবে না।</p>
       <textarea class="fld" id="rs-t" placeholder="ব্যাকআপের লেখা এখানে পেস্ট করুন"></textarea>
-      <input type="file" id="rs-f" accept=".json,application/json" style="font-size:13px">
-      <button class="btn p" id="rs-b" onclick="App.Bk.restore()">রিস্টোর করুন</button>
+      <input type="file" id="rs-f" accept=".json,application/json">
+      <button class="btn b" id="rs-b" onclick="App.Bk.restore()"><i class="ic" data-i="cloudup"></i>রিস্টোর করুন</button>
     </div>
-    <div style="height:14px"></div>
-    <div class="cap"><span>রিসাইকেল বিন (মুছে ফেলা ডাটা)</span><span id="bin-c"></span></div>
+    <div class="cap" style="margin-top:8px"><span style="display:flex;align-items:center;gap:8px"><i class="ic" data-i="shield" style="color:var(--gold)"></i>রিসাইকেল বিন</span><span class="badge" id="bin-c">মুছে ফেলা ডাটা</span></div>
     <div class="panel" id="bin"></div>
   </div>
 </div>
 
 <div class="nav" id="nav">
-  <button class="on" id="n-h" onclick="App.Nav.home()"><svg viewBox="0 0 24 24"><path d="M4 5h12a3 3 0 0 1 3 3v11H7a3 3 0 0 1-3-3z"/><path d="M8 9h7M8 13h5"/></svg>খাতা</button>
-  <button id="n-t" onclick="App.Nav.tools()"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.4 8 8 9 4.6-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>ব্যাকআপ</button>
+  <button class="on" id="n-h" onclick="App.Nav.home()"><i class="ic" data-i="home"></i>খাতা</button>
+  <button id="n-t" onclick="App.Nav.tools()"><i class="ic" data-i="cloud"></i>ব্যাকআপ</button>
 </div>
 
 <div class="ov" id="s-acc" onclick="App.Sh.bg(event,'s-acc')"><div class="sh"><div class="gr"></div><h3 id="s-acc-t">নতুন খাতা</h3>
-  <label for="i-a">খাতা বা ব্যক্তির নাম</label><input class="fld" id="i-a" maxlength="60" placeholder="যেমন: সালাম, বাজার খরচ" autocomplete="off">
+  <label for="i-a">খাতা বা ব্যক্তির নাম</label><div class="fw"><input class="fld" id="i-a" maxlength="60" placeholder="যেমন: সালাম, বাজার খরচ" autocomplete="off"><i class="ic fi" data-i="pencil"></i></div>
   <div class="row"><button class="btn" onclick="App.Sh.close('s-acc')">বাতিল</button><button class="btn p" id="b-a" onclick="App.Act.saveAcc()">সংরক্ষণ করুন</button></div></div></div>
-<div class="ov" id="s-menu" onclick="App.Sh.bg(event,'s-menu')"><div class="sh"><div class="gr"></div><h3>খাতার অপশন</h3>
-  <div class="col"><button class="btn" onclick="App.Sh.rename()">নাম পরিবর্তন করুন</button><button class="btn d" onclick="App.Sh.delAcc()">খাতা মুছুন</button><button class="btn" style="border:0" onclick="App.Sh.close('s-menu')">বন্ধ করুন</button></div></div></div>
+<div class="ov" id="s-menu" onclick="App.Sh.bg(event,'s-menu')"><div class="sh"><div class="gr"></div><h3>খাতার অপশন<button class="x" onclick="App.Sh.close('s-menu')" aria-label="বন্ধ"><i class="ic" data-i="x"></i></button></h3>
+  <div class="col"><button class="btn ol" onclick="App.Sh.rename()"><i class="ic" data-i="pencil" style="color:var(--gold)"></i>নাম পরিবর্তন করুন</button><button class="btn dl" onclick="App.Sh.delAcc()"><i class="ic" data-i="trash"></i>খাতা মুছুন</button></div></div></div>
 <div class="ov" id="s-tx" onclick="App.Sh.bg(event,'s-tx')"><div class="sh"><div class="gr"></div><h3 id="s-tx-t">নতুন হিসাব</h3>
-  <div class="seg"><button class="i on" id="t-i" onclick="App.UI.type('income')">জমা (+)</button><button class="e" id="t-e" onclick="App.UI.type('expense')">খরচ (−)</button></div>
-  <label for="i-d">বিবরণ</label><input class="fld" id="i-d" maxlength="120" placeholder="যেমন: বেতন, আপেল, লোন" autocomplete="off">
-  <label for="i-m">পরিমাণ (৳)</label><input class="fld" id="i-m" type="number" inputmode="decimal" min="0" step="any" placeholder="0">
-  <div class="row"><button class="btn" onclick="App.Sh.close('s-tx')">বাতিল</button><button class="btn p" id="b-t" onclick="App.Act.saveTx()">সংরক্ষণ করুন</button></div></div></div>
+  <div class="seg"><button class="i on" id="t-i" onclick="App.UI.type('income')"><i class="ic" data-i="in"></i>জমা (+)</button><button class="e" id="t-e" onclick="App.UI.type('expense')"><i class="ic" data-i="out"></i>খরচ (−)</button></div>
+  <label for="i-d">বিবরণ</label><div class="fw"><input class="fld" id="i-d" maxlength="120" placeholder="যেমন: বেতন, আপেল, লোন" autocomplete="off"><i class="ic fi" data-i="pencil"></i></div>
+  <label for="i-m">পরিমাণ (৳)</label><input class="fld" id="i-m" type="number" inputmode="decimal" min="0" step="any" placeholder="0.00">
+  <label for="i-dt">তারিখ</label><input class="fld" id="i-dt" type="date">
+  <div class="row"><button class="btn" onclick="App.Sh.close('s-tx')">বাতিল</button><button class="btn p" id="b-t" onclick="App.Act.saveTx()"><i class="ic" data-i="check"></i>সংরক্ষণ করুন</button></div></div></div>
 <div class="ov" id="s-cf" onclick="App.Sh.bg(event,'s-cf')"><div class="sh"><div class="gr"></div><h3 id="cf-t">নিশ্চিত করুন</h3><p id="cf-m"></p>
   <div class="row"><button class="btn" onclick="App.Sh.close('s-cf')">না, থাক</button><button class="btn d" id="cf-go">হ্যাঁ, মুছুন</button></div></div></div>
 <div class="toast" id="toast"></div>
@@ -170,11 +248,50 @@ textarea.fld{height:110px;padding:10px 14px;resize:none;font-size:12px}
 <script>
 const tg = window.Telegram ? window.Telegram.WebApp : null;
 if (tg) { try { tg.ready(); tg.expand(); } catch (e) {} }
-const dark = tg && tg.colorScheme ? tg.colorScheme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-document.documentElement.dataset.theme = dark ? 'dark' : 'light';
-try { tg && tg.setHeaderColor(dark ? '#0a1630' : '#0e2244'); } catch (e) {}
 const $ = id => document.getElementById(id);
 const N = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+
+/* ---------- Icons ---------- */
+const P = {
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+  cart: '<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L21.5 8H6"/>',
+  home: '<path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  phone: '<rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/>',
+  wallet: '<path d="M3 7a2 2 0 0 1 2-2h13v4"/><path d="M3 7v11a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1H5a2 2 0 0 1-2-2z"/><circle cx="16.5" cy="14.5" r="1"/>',
+  fork: '<path d="M6 3v6a3 3 0 0 0 6 0V3M9 12v9"/><path d="M17 21V3c-2.5 1.5-3.5 4-3.5 8h3.5"/>',
+  coin: '<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.8c0-1 1-1.6 2.5-1.6s2.5.7 2.5 1.8c0 2.3-5 1.2-5 3.6 0 1.1 1.1 1.8 2.5 1.8s2.5-.6 2.5-1.6"/>',
+  in: '<path d="M17 7 7 17M7 9v8h8"/>', out: '<path d="M7 17 17 7M9 7h8v8"/>',
+  up: '<path d="M12 19V5M5 12l7-7 7 7"/>', down: '<path d="M12 5v14M5 12l7 7 7-7"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>', back: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+  refresh: '<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
+  download: '<path d="M12 4v11M7.5 11 12 15.5 16.5 11M5 20h14"/>',
+  copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+  cloud: '<path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 10a4 4 0 0 1 0 8z"/>',
+  cloudup: '<path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 10a4 4 0 0 1 0 8z"/><path d="M12 16v-5M9.5 13l2.5-2.5 2.5 2.5"/>',
+  shield: '<path d="M12 3 4 6v6c0 5 3.4 8 8 9 4.6-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  pencil: '<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
+  x: '<path d="M6 6l12 12M18 6 6 18"/>', check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>', chev: '<path d="m9 6 6 6-6 6"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>', dots: '<circle cx="12" cy="5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="19" r="1.3"/>'
+};
+const svg = n => '<svg viewBox="0 0 24 24">' + (P[n] || '') + '</svg>';
+const ico = (n, cls) => { const e = document.createElement('i'); e.className = 'ic ' + (cls || ''); e.innerHTML = svg(n); return e; };
+const av = (n, c) => { const d = N('div', 'av'); d.style.setProperty('--c', c); d.appendChild(ico(n)); return d; };
+const hydrate = () => document.querySelectorAll('i[data-i]').forEach(e => e.innerHTML = svg(e.dataset.i));
+
+/* ---------- Theme ---------- */
+const applyTheme = d => {
+  document.documentElement.dataset.theme = d ? 'dark' : 'light';
+  try { tg && tg.setHeaderColor(d ? '#050c1b' : '#eaf4f4'); tg && tg.setBackgroundColor(d ? '#050c1b' : '#eaf4f4'); } catch (e) {}
+  const t = $('th-i'); if (t) t.innerHTML = svg(d ? 'sun' : 'moon');
+};
+let saved = null; try { saved = localStorage.getItem('hk-theme'); } catch (e) {}
+const dark0 = saved ? saved === 'dark' : (tg && tg.colorScheme ? tg.colorScheme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches);
+document.documentElement.dataset.theme = dark0 ? 'dark' : 'light';
+
+const PAL = ['#22c08a', '#14b8a6', '#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899'];
 const U = {
   id: () => 'id_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 6),
   money: n => '৳' + Math.abs(Number(n) || 0).toLocaleString('bn-BD', { maximumFractionDigits: 2 }),
@@ -183,7 +300,11 @@ const U = {
   dt: d => new Date(d).toLocaleString('bn-BD', { hour12: true, month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
   day: ts => ts ? new Date(ts).toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' }) : 'পুরনো এন্ট্রি',
   tm: ts => ts ? new Date(ts).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit', hour12: true }) : '',
-  sum: l => l.reduce((s, t) => (t.type === 'income' ? s.i += t.amount : s.e += t.amount, s), { i: 0, e: 0 })
+  ymd: ts => { const d = new Date(ts); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); },
+  sum: l => l.reduce((s, t) => (t.type === 'income' ? s.i += t.amount : s.e += t.amount, s), { i: 0, e: 0 }),
+  accIcon: n => /বাজার|কেনা|শপ/.test(n) ? 'cart' : /ভাড়া|বাড়ি|ঘর/.test(n) ? 'home' : /বিল|মোবাইল|ফোন|নেট/.test(n) ? 'phone' : /সঞ্চয়|ব্যাংক|সেভিং/.test(n) ? 'coin' : 'user',
+  accColor: (n, ic) => ({ cart: '#ef4f6e', home: '#3b82f6', phone: '#8b5cf6', coin: '#f59e0b' })[ic] || PAL[[...n].reduce((a, c) => (a * 31 + c.codePointAt(0)) >>> 0, 7) % PAL.length],
+  txIcon: (d, type) => /খাব|খাওয়া|হোটেল|রেস্টুরেন্ট|নাস্তা|লাঞ্চ|ডিনার/.test(d) ? 'fork' : /রিচার্জ|মোবাইল|ফোন|ইন্টারনেট/.test(d) ? 'phone' : /বাজার|আপেল|কেনা|শপ|সদাই/.test(d) ? 'cart' : /বাড়ি|ভাড়া|ঘর/.test(d) ? 'home' : /বেতন|আয়|ইনকাম/.test(d) ? 'wallet' : /সঞ্চয়|লোন|ধার|ব্যাংক/.test(d) ? 'coin' : (type === 'income' ? 'in' : 'out')
 };
 
 window.App = {
@@ -191,7 +312,7 @@ window.App = {
   S: { acc: null, edit: false, txId: null, type: 'income', f: 'all', busy: false },
 
   async init() {
-    App.UI.view('v-load'); $('ld-t').textContent = 'ডাটা লোড হচ্ছে...';
+    App.UI.view('v-load'); $('nav').style.display = 'none'; $('ld-t').textContent = 'ডাটা লোড হচ্ছে...';
     const c = window.firebaseConfig;
     if (!c || !c.apiKey || String(c.apiKey).includes('আপনার_')) { $('ld-t').textContent = 'firebase-config.js ফাইলে ফায়ারবেস কি বসান'; return; }
     try {
@@ -283,7 +404,10 @@ window.App = {
       if (!desc) return App.UI.toast('বিবরণ লিখুন', 1);
       if (!amount) return App.UI.toast('সঠিক পরিমাণ দিন', 1);
       const prev = App.S.edit ? App.D.tx[acc].find(t => t.id === App.S.txId) : null;
-      const t = { id: prev ? prev.id : U.id(), account: acc, desc, amount, type: App.S.type, date: prev ? prev.date : U.dt(new Date()), timestamp: prev ? (prev.timestamp || Date.now()) : Date.now() };
+      let ts = prev ? (prev.timestamp || Date.now()) : Date.now();
+      const dv = $('i-dt').value;
+      if (dv && dv !== U.ymd(ts)) { const p = dv.split('-').map(Number), d = new Date(ts); d.setFullYear(p[0], p[1] - 1, p[2]); ts = d.getTime(); }
+      const t = { id: prev ? prev.id : U.id(), account: acc, desc, amount, type: App.S.type, date: prev && prev.timestamp === ts ? prev.date : U.dt(ts), timestamp: ts };
       const btn = $('b-t'); App.S.busy = true; btn.disabled = true; btn.textContent = 'সংরক্ষণ হচ্ছে...';
       try {
         await App.db.collection('transactions').doc(t.id).set(t);
@@ -291,7 +415,7 @@ window.App = {
         App.D.last[acc] = Math.max(App.D.last[acc] || 0, t.timestamp);
         App.Sh.close('s-tx'); App.UI.dash(); App.UI.toast('লেনদেন সংরক্ষিত হয়েছে');
       } catch (e) { console.error(e); App.UI.toast('সেভ হয়নি, আবার চেষ্টা করুন', 1); }
-      finally { App.S.busy = false; btn.disabled = false; btn.textContent = 'সংরক্ষণ করুন'; }
+      finally { App.S.busy = false; btn.disabled = false; btn.innerHTML = ''; btn.append(ico('check'), document.createTextNode('সংরক্ষণ করুন')); }
     },
     async delTx(t) {
       const acc = App.S.acc; App.Sh.close('s-cf');
@@ -325,18 +449,19 @@ window.App = {
         o.transactions.forEach(t => { if (t && t.id && t.account && !have.has(t.id)) { nt++; ops.push(b => b.set(App.db.collection('transactions').doc(t.id), t)); } });
         await App.Act.run(ops); await App.load(); App.UI.toast(na + 'টি খাতা ও ' + nt + 'টি লেনদেন ফিরে এসেছে'); $('rs-t').value = ''; $('rs-f').value = '';
       } catch (e) { console.error(e); App.UI.toast('রিস্টোর হয়নি', 1); }
-      finally { btn.disabled = false; btn.textContent = 'রিস্টোর করুন'; }
+      finally { btn.disabled = false; btn.innerHTML = ''; btn.append(ico('cloudup'), document.createTextNode('রিস্টোর করুন')); }
     },
     async loadBin() {
-      const box = $('bin'); box.innerHTML = ''; $('bin-c').textContent = '';
+      const box = $('bin'); box.innerHTML = ''; $('bin-c').textContent = 'মুছে ফেলা ডাটা';
       try {
         const s = await App.db.collection('trash').get(); const items = [];
         s.forEach(d => items.push({ id: d.id, ...d.data() })); items.sort((a, b) => b.deletedAt - a.deletedAt);
-        $('bin-c').textContent = items.length ? items.length + 'টি' : '';
+        $('bin-c').textContent = items.length ? items.length + 'টি' : 'মুছে ফেলা ডাটা';
         if (!items.length) { const e = N('div', 'emp'); e.append(N('b', '', 'বিন খালি'), N('span', '', 'যা মুছবেন তা এখানে জমা থাকবে।')); return box.appendChild(e); }
         items.forEach(it => {
-          const r = N('div', 'bin'), g = N('div', 'g'); g.append(N('div', 'n', (it.kind === 'account' ? 'খাতা: ' : '') + it.label), N('div', 'm', U.dt(it.deletedAt)));
-          const b = N('button', 'sm', 'ফিরিয়ে আনুন'); b.onclick = () => App.Bk.recover(it); r.append(g, b); box.appendChild(r);
+          const r = N('div', 'bin'), g = N('div', 'g'); g.append(N('div', 'n', (it.kind === 'account' ? 'খাতা: ' : 'লেনদেন: ') + it.label), N('div', 'm', U.dt(it.deletedAt)));
+          const b = N('button', 'sm g', 'ফিরিয়ে আনুন'); b.onclick = () => App.Bk.recover(it);
+          r.append(av(it.kind === 'account' ? 'user' : 'coin', it.kind === 'account' ? '#8b5cf6' : '#ef4f6e'), g, b); box.appendChild(r);
         });
       } catch (e) { box.appendChild(N('div', 'emp', 'বিন লোড করা যায়নি')); }
     },
@@ -358,26 +483,41 @@ window.App = {
 
   UI: {
     view(id) { document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === id)); },
-    toast(m, err) { const t = $('toast'); t.textContent = m; t.className = 'toast show' + (err ? ' err' : ''); clearTimeout(App.UI._t); App.UI._t = setTimeout(() => t.className = 'toast', 2800); },
-    type(t) { App.S.type = t; $('t-i').classList.toggle('on', t === 'income'); $('t-e').classList.toggle('on', t === 'expense'); },
+    theme() {
+      const d = document.documentElement.dataset.theme !== 'dark'; applyTheme(d);
+      try { localStorage.setItem('hk-theme', d ? 'dark' : 'light'); } catch (e) {}
+      try { tg && tg.HapticFeedback && tg.HapticFeedback.selectionChanged(); } catch (e) {}
+    },
+    toast(m, err) {
+      const t = $('toast'); t.textContent = m; t.className = 'toast show' + (err ? ' err' : ''); clearTimeout(App.UI._t); App.UI._t = setTimeout(() => t.className = 'toast', 2800);
+      try { tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred(err ? 'error' : 'success'); } catch (e) {}
+    },
+    num(id, v, f) {
+      const el = $(id), from = el._v || 0; el._v = v;
+      if (from === v || matchMedia('(prefers-reduced-motion:reduce)').matches) { el.textContent = f(v); return; }
+      const t0 = performance.now();
+      (function s(t) { const p = Math.min(1, (t - t0) / 650), e = 1 - Math.pow(1 - p, 3); el.textContent = f(p >= 1 ? v : from + (v - from) * e); if (p < 1) requestAnimationFrame(s); })(t0);
+    },
+    type(t) { App.S.type = t; $('t-i').classList.toggle('on', t === 'income'); $('t-e').classList.toggle('on', t === 'expense'); try { tg && tg.HapticFeedback && tg.HapticFeedback.selectionChanged(); } catch (e) {} },
     filter(f) { App.S.f = f; document.querySelectorAll('#chips .chip').forEach(c => c.classList.toggle('on', c.dataset.f === f)); App.UI.dash(); },
     empty(a, b) { const d = N('div', 'emp'); d.append(N('b', '', a), N('span', '', b)); return d; },
     accounts() {
       const L = $('al'); L.innerHTML = ''; const q = $('q-a').value.trim().toLowerCase(), D = App.D; let all = { i: 0, e: 0 };
       D.users.forEach(n => { const s = U.sum(D.tx[n]); all.i += s.i; all.e += s.e; });
-      $('h-n').textContent = U.sgn(all.i - all.e); $('h-i').textContent = U.money(all.i); $('h-e').textContent = U.money(all.e);
+      const net = all.i - all.e, ar = $('h-ar'); ar.className = 'ar ' + (net < 0 ? 'exp' : 'inc'); ar.innerHTML = svg(net < 0 ? 'down' : 'up');
+      App.UI.num('h-n', net, U.sgn); App.UI.num('h-i', all.i, U.money); App.UI.num('h-e', all.e, U.money);
       $('h-c').textContent = D.users.length ? D.users.length + 'টি খাতা' : '';
       const f = D.users.filter(u => u.toLowerCase().includes(q));
       if (!f.length) return L.appendChild(App.UI.empty(q ? 'কোনো খাতা মেলেনি' : 'প্রথম খাতাটি খুলুন', q ? 'অন্য নামে খুঁজুন।' : 'নিচের বাটনে চেপে নতুন খাতা তৈরি করুন।'));
       f.forEach(n => {
-        const txs = D.tx[n], s = U.sum(txs), b = s.i - s.e, r = N('button', 'ac'), g = N('div', 'g'), a = N('div', 'a ' + (b < 0 ? 'exp' : 'inc'), U.sgn(b));
-        g.append(N('div', 'n', n), N('div', 'm', txs.length + 'টি লেনদেন')); a.appendChild(N('small', '', b < 0 ? 'পাবেন না / বাকি' : 'জমা আছে'));
-        r.append(N('div', 'no', [...n][0].toUpperCase()), g, a); r.onclick = () => App.Nav.open(n); L.appendChild(r);
+        const txs = D.tx[n], s = U.sum(txs), b = s.i - s.e, r = N('button', 'ac'), g = N('div', 'g'), a = N('div', 'a ' + (b < 0 ? 'exp' : 'inc'), U.sgn(b)), ic = U.accIcon(n);
+        g.append(N('div', 'n', n), N('div', 'm', txs.length + 'টি লেনদেন'));
+        r.append(av(ic, U.accColor(n, ic)), g, a, ico('chev', 'chv')); r.onclick = () => App.Nav.open(n); L.appendChild(r);
       });
     },
     dash() {
       const n = App.S.acc; if (!n) return; const txs = App.D.tx[n], s = U.sum(txs);
-      $('a-b').textContent = U.sgn(s.i - s.e); $('a-i').textContent = U.money(s.i); $('a-e').textContent = U.money(s.e);
+      App.UI.num('a-b', s.i - s.e, U.sgn); App.UI.num('a-i', s.i, U.money); App.UI.num('a-e', s.e, U.money);
       const asc = [...txs].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)), run = {}; let c = 0;
       asc.forEach(t => { c += t.type === 'income' ? t.amount : -t.amount; run[t.id] = c; });
       const q = $('q-t').value.trim().toLowerCase(), fl = App.S.f, L = $('tl'); L.innerHTML = '';
@@ -385,12 +525,13 @@ window.App = {
       if (!rows.length) return L.appendChild(App.UI.empty(q || fl !== 'all' ? 'কোনো লেনদেন মেলেনি' : 'এখনো কোনো লেনদেন নেই', 'নিচের বাটনে চেপে প্রথম হিসাব যোগ করুন।'));
       let lastDay = null;
       rows.forEach(t => {
-        const day = U.day(t.timestamp); if (day !== lastDay) { const h = N('div', 'dh'); h.append(N('span', '', day)); L.appendChild(h); lastDay = day; }
+        const day = U.day(t.timestamp); if (day !== lastDay) { L.appendChild(N('div', 'dh', day)); lastDay = day; }
         const inc = t.type === 'income', r = N('div', 'tx');
-        r.append(N('div', 'd', t.desc), N('div', 'a ' + (inc ? 'inc' : 'exp'), (inc ? '+' : '−') + U.money(t.amount)),
-          N('div', 'm', U.tm(t.timestamp) || t.date || ''), N('div', 'j', 'জের ' + U.sgn(run[t.id])));
+        r.append(av(U.txIcon(String(t.desc || ''), t.type), inc ? '#22c08a' : '#ef4f6e'), N('div', 'd', t.desc), N('div', 'a ' + (inc ? 'inc' : 'exp'), (inc ? '+' : '−') + U.money(t.amount)),
+          N('div', 'm', (inc ? 'জমা' : 'খরচ') + ' · জের ' + U.sgn(run[t.id])), N('div', 'j', U.tm(t.timestamp) || t.date || ''));
         const ac = N('div', 'ac2'), e = N('button', 'sm', 'এডিট'), d = N('button', 'sm r', 'মুছুন');
-        e.onclick = () => App.Sh.tx(t); d.onclick = () => App.Sh.delTx(t); ac.append(e, d); r.appendChild(ac); L.appendChild(r);
+        e.onclick = ev => { ev.stopPropagation(); App.Sh.tx(t); }; d.onclick = ev => { ev.stopPropagation(); App.Sh.delTx(t); };
+        ac.append(e, d); r.appendChild(ac); r.onclick = () => r.classList.toggle('open'); L.appendChild(r);
       });
     }
   },
@@ -399,13 +540,13 @@ window.App = {
     open(id) { $(id).classList.add('on'); }, close(id) { $(id).classList.remove('on'); }, bg(e, id) { if (e.target.id === id) App.Sh.close(id); },
     account(n) { if (!n) App.S.acc = null; $('s-acc-t').textContent = n ? 'খাতার নাম পরিবর্তন' : 'নতুন খাতা'; $('i-a').value = n || ''; App.Sh.open('s-acc'); setTimeout(() => $('i-a').focus(), 200); },
     rename() { App.Sh.close('s-menu'); App.Sh.account(App.S.acc); },
-    tx(t) { App.S.edit = !!t; App.S.txId = t ? t.id : null; $('s-tx-t').textContent = t ? 'হিসাব এডিট' : 'নতুন হিসাব'; $('i-d').value = t ? t.desc : ''; $('i-m').value = t ? t.amount : ''; App.UI.type(t ? t.type : 'income'); App.Sh.open('s-tx'); setTimeout(() => $('i-d').focus(), 200); },
+    tx(t) { App.S.edit = !!t; App.S.txId = t ? t.id : null; $('s-tx-t').textContent = t ? 'হিসাব এডিট' : 'নতুন হিসাব'; $('i-d').value = t ? t.desc : ''; $('i-m').value = t ? t.amount : ''; $('i-dt').value = U.ymd(t ? (t.timestamp || Date.now()) : Date.now()); App.UI.type(t ? t.type : 'income'); App.Sh.open('s-tx'); setTimeout(() => $('i-d').focus(), 200); },
     cf(t, m, fn) { $('cf-t').textContent = t; $('cf-m').textContent = m; $('cf-go').onclick = fn; App.Sh.open('s-cf'); },
     delAcc() { App.Sh.close('s-menu'); App.Sh.cf('খাতা মুছবেন?', '"' + App.S.acc + '" খাতা ও ' + App.D.tx[App.S.acc].length + 'টি লেনদেন রিসাইকেল বিনে যাবে। সেখান থেকে ফেরানো যাবে।', App.Act.delAcc); },
     delTx(t) { App.Sh.cf('লেনদেন মুছবেন?', '"' + t.desc + '" (' + U.money(t.amount) + ') রিসাইকেল বিনে যাবে। সেখান থেকে ফেরানো যাবে।', () => App.Act.delTx(t)); }
   }
 };
-addEventListener('DOMContentLoaded', () => App.init());
+addEventListener('DOMContentLoaded', () => { hydrate(); applyTheme(dark0); App.init(); });
 </script>
 </body>
-</html>
+  </html>
